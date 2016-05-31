@@ -1,0 +1,147 @@
+import os
+from flask import Flask, request, redirect, url_for, flash
+from flask import render_template
+from werkzeug.utils import secure_filename
+
+from cStringIO import StringIO
+import sys
+
+import sbml_diff
+from sbml_diff import *
+
+UPLOAD_FOLDER = './static/uploads'
+ALLOWED_EXTENSIONS = {'sbml', 'xml'}
+
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.secret_key = 'super secret key'
+app.config['SESSION_TYPE'] = 'filesystem'
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+def process_single(models, tmp_path, dir_name, reaction_label, selected_model_num=False):
+
+    all_colors = ["#FF7F00",  "#32FF00", "#19B2FF", "#654CFF",  "#E51932", "#FFFF32"]
+
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = StringIO()
+
+    if selected_model_num is False:
+        name = ""
+        sbml_diff.diff_models(models, sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label))
+    else:
+        name = str(selected_model_num) + "-"
+        sbml_diff.diff_models(models, sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label, selected_model=selected_model_num))
+
+
+    graphviz = mystdout.getvalue()
+    sys.stdout = old_stdout
+
+    f = open(os.path.join(tmp_path, name + 'results.dot'), 'w')
+    f.write(graphviz)
+    f.close()
+
+    # Get image
+    from subprocess import call
+    pr = ["dot", "-Tpng", "-o", "static/uploads/" + dir_name + "/" + name + "results.png", "static/uploads/" + dir_name + "/" + name + "results.dot"]
+    call(pr)
+
+
+def process(uploads, tmp_path, dir_name, reaction_label):
+    models = []
+
+    f1 = open(os.path.join(tmp_path, uploads[0]), 'r')
+    m1 = f1.read()
+    models.append(m1)
+
+    if len(uploads) > 1:
+        f2 = open(os.path.join(tmp_path, uploads[1]), 'r')
+        m2 = f2.read()
+        models.append(m2)
+
+    if len(uploads) > 2:
+        f3 = open(os.path.join(tmp_path, uploads[2]), 'r')
+        m3 = f3.read()
+        models.append(m3)
+
+
+    for i in range(0, len(uploads)):
+        process_single(models, tmp_path, dir_name, reaction_label, i + 1)
+
+    # all-in-one
+    process_single(models, tmp_path, dir_name, reaction_label)
+
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+
+        # Create a subdirectory in which to save results
+        dir_name = str(max(map(lambda x: int(x), os.listdir(UPLOAD_FOLDER))) + 1)
+        tmp_path = UPLOAD_FOLDER + "/" + dir_name
+        os.mkdir(tmp_path)
+
+        uploads = []
+        for field in ['file1', 'file2', 'file3']:
+
+            if field not in request.files:
+                continue
+
+            f = request.files[field]
+
+            if f and allowed_file(f.filename):
+                filename = secure_filename(f.filename)
+                filename = str(len(uploads)+1) + "_" + filename  # prefix number to file to record order of files (which affects colors)
+
+                f.save(os.path.join(tmp_path, filename))
+                uploads.append(filename)
+
+        if len(uploads) == 0:
+            os.rmdir(tmp_path)
+            flash('No files uploaded')
+            return redirect(request.url)
+        else:
+
+            reaction_label = "none"
+            if "reaction_labels" in request.form and request.form["reaction_labels"] in ["none", "name", "rate", "name+rate"]:
+                reaction_label = request.form["reaction_labels"]
+
+            process(uploads, tmp_path, dir_name, reaction_label)
+
+            return redirect(url_for('results',
+                                    filename=dir_name))
+
+    return render_template('upload.html')
+
+
+@app.route('/results/<filename>')
+def results(filename):
+
+    # look up list of files
+    files = os.listdir(os.path.join(UPLOAD_FOLDER, filename))
+    files = filter(lambda f: ".xml" in f or ".sbml" in f, files)
+
+    return render_template('results.html', filename=filename, files=files, fileNumbers=range(1,len(files)+1))
+
+# Routes for static pages
+@app.route('/')
+def page_homepage():
+    return render_template('index.html')
+
+
+@app.route('/sbml-diff')
+def page_sbml_diff():
+    return render_template('sbml-diff.html')
+
+
+@app.route('/tebio-fit')
+def page_tebio_fit():
+    return render_template('tebio-fit.html')
+
+
+
+if __name__ == "__main__":
+    app.run()

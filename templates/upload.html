@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <h1 class="title">Upload Form</h1>
+
+
+    <div class="jumbotron">
+        <form role="form" class="form" method=post enctype=multipart/form-data>
+
+            <div>
+                <h3>Files</h3>
+                Select model files to upload (must be in SBML format and have .xml or .sbml extension).
+
+                <div class="form-group">
+                    <label for="file1">File 1:</label>
+                    <input type=file name="file1">
+                </div>
+                <div class="form-group">
+                    <label for="file2">File 2:</label>
+                    <input type=file name="file2">
+                </div>
+                <div class="form-group">
+                    <label for="file3">File 3:</label>
+                    <input type=file name="file3">
+                </div>
+
+            </div>
+
+            <div>
+                <h3>Options</h3>
+
+                <div class="form-group">
+                    <label for="reaction_labels">Labels for reaction nodes:</label>
+
+                    <select name="reaction_labels">
+                        <option value="none" selected>none</option>
+                        <option value="name">name</option>
+                        <option value="rate">rate</option>
+                        <option value="name+rate">name and rate</option>
+                    </select>
+
+                </div>
+            </div>
+
+
+            <button type="submit" class="btn btn-default">Draw</button>
+        </form>
+    </div>
+
+{%  endblock %}
