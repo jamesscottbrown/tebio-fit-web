@@ -44,9 +44,14 @@ def process_single(models, tmp_path, dir_name, reaction_label, selected_model_nu
     f.write(graphviz)
     f.close()
 
-    # Get image
+    # Get png
     from subprocess import call
     pr = ["dot", "-Tpng", "-o", "static/uploads/" + dir_name + "/" + name + "results.png", "static/uploads/" + dir_name + "/" + name + "results.dot"]
+    call(pr)
+
+    # Get pdf
+    from subprocess import call
+    pr = ["dot", "-Tpdf", "-o", "static/uploads/" + dir_name + "/" + name + "results.pdf", "static/uploads/" + dir_name + "/" + name + "results.dot"]
     call(pr)
 
 
