@@ -24,6 +24,14 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+
+def to_int(x):
+    try:
+        return int(x)
+    except ValueError:
+        return 0
+
+
 def process_single(models, tmp_path, dir_name, reaction_label, selected_model_num=False):
 
     all_colors = ["#FF7F00",  "#32FF00", "#19B2FF", "#654CFF",  "#E51932", "#FFFF32"]
@@ -87,7 +95,7 @@ def upload_file():
     if request.method == 'POST':
 
         # Create a subdirectory in which to save results
-        dir_name = str(max(map(lambda x: int(x), os.listdir(UPLOAD_FOLDER))) + 1)
+        dir_name = str(max(map(lambda x: to_int(x), os.listdir(UPLOAD_FOLDER))) + 1)
         tmp_path = UPLOAD_FOLDER + "/" + dir_name
         os.mkdir(tmp_path)
 
@@ -146,7 +154,7 @@ def upload_tebiofit_file():
     if request.method == 'POST':
 
         # Create a subdirectory in which to save results
-        dir_name = str(max(map(lambda x: int(x), os.listdir(basedir))) + 1)
+        dir_name = str(max(map(lambda x: to_int(x), os.listdir(basedir))) + 1)
         tmp_path = basedir + "/" + dir_name
         os.mkdir(tmp_path)
 
