@@ -11,7 +11,12 @@ from sbml_diff import *
 
 import tebio_fit_importer
 
-UPLOAD_FOLDER = './static/uploads'
+
+SERVER_DIR = '/var/www/tebio'
+# SERVER_DIR = '.'
+UPLOAD_FOLDER = SERVER_DIR + '/static/uploads'
+
+
 ALLOWED_EXTENSIONS = {'sbml', 'xml'}
 
 app = Flask(__name__)
@@ -56,12 +61,12 @@ def process_single(models, tmp_path, dir_name, reaction_label, selected_model_nu
 
     # Get png
     from subprocess import call
-    pr = ["dot", "-Tpng", "-o", "static/uploads/" + dir_name + "/" + name + "results.png", "static/uploads/" + dir_name + "/" + name + "results.dot"]
+    pr = ["dot", "-Tpng", "-o", SERVER_DIR + "/static/uploads/" + dir_name + "/" + name + "results.png", SERVER_DIR + "/static/uploads/" + dir_name + "/" + name + "results.dot"]
     call(pr)
 
     # Get pdf
     from subprocess import call
-    pr = ["dot", "-Tpdf", "-o", "static/uploads/" + dir_name + "/" + name + "results.pdf", "static/uploads/" + dir_name + "/" + name + "results.dot"]
+    pr = ["dot", "-Tpdf", "-o", SERVER_DIR + "/static/uploads/" + dir_name + "/" + name + "results.pdf", SERVER_DIR +  "/static/uploads/" + dir_name + "/" + name + "results.dot"]
     call(pr)
 
 
