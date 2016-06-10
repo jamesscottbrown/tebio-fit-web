@@ -2,19 +2,48 @@
 {% block content %}
 
 
-<h1 class="title">sbml-diff</h1>
-sbml-diff is a tool for visually representing a single <a href="http://sbml.org/">SBML</a> model, or for visually
-comparing 2 or more SBML models.
+    <h1 class="title">sbml-diff</h1>
+    sbml-diff is a tool for visually representing a single <a href="http://sbml.org/">SBML</a> model, or for visually
+    comparing 2 or more SBML models.
 
-It can be used in three ways:
-<ul>
-    <li>As a command-line tool</li>
-    <li>As a python package</li>
-    <li>through our <a href="/tebio/upload">web interface</a></li>
-</ul>
+    It can be used in three ways:
+    <ul>
+        <li>As a command-line tool</li>
+        <li>As a python package</li>
+        <li>through our <a href="/tebio/upload">web interface</a></li>
+    </ul>
 
-The code is <a href="https://github.com/jamesscottbrown/sbml-diff">on Github</a>.
+    The code is <a href="https://github.com/jamesscottbrown/sbml-diff">on Github</a>.
 
-<h2>Visual Semantics of the Results</h2>
+    <h2>Visual Semantics of the Results</h2>
+
+    <p>Ellipses represent chemical species. Rectangles represent reactions. Parallelograms represent rules.</p>
+
+
+    <p>Directed edges with solid lines join each reactant species to the corresponding reactions, and each reaction to
+        the corresponding product species. Dashed lines join species to reactions whose rate they modify, but in which
+        they are not reactants; the corresponding kineticLaw for the reaction is analysed to determine whether this
+        influence is activatory or inhibitory, and the arrowhead shape is set accordingly. </p>
+
+    <p>Rules of type
+       AssigmentRule or RateRule that set concentrations of particular species are represented as parallelograms, with
+        dotted lines indicating directed away from the species they depend on, and towards the species that they affect.
+    </p>
+
+    <p>Reactions or rules that appear in more than one model, but with different kinetic laws, are displayed with a grey
+        background. Colouring is used to indicate whether each node and edge is common to all models (grey), some but
+        not all models (black), or a single model (a colour specific to that model).</p>
+
+    <p>The user can choose between labelling reaction nodes with the corresponding reaction name, kinetic law, or
+    name and rate law, or leaving them unlabelled.</p>
+
+    <h2>Limitations</h2>
+
+    <p>Reactions and species are compared based on their ID; sbml-diff cannot recognise that two reactions in different
+        model files are the same unless they have the same name.</p>
+
+    <p>The arrowheads indicating activation/repression of a reaction by a ModifierSpecies may be misleading if the
+    corresponding kineticLaw is not monotonic, or if the kineticLAw could represent either activation and repression,
+        depending on the exact parameter values chosen.</p>
 
 {% endblock %}
