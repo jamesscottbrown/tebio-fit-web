@@ -179,7 +179,8 @@ def upload_tebiofit_file():
             uploads.append(filename)
 
         # Save model files
-        for field in ['file1', 'file2', 'file3']:
+        for i in range(1, len(request.files)+1):
+            field = "file" + str(i)
 
             if field not in request.files:
                 continue
