@@ -37,7 +37,7 @@ def to_int(x):
         return 0
 
 
-def process_single(models, tmp_path, dir_name, reaction_label, selected_model_num=False):
+def process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, selected_model_num=False):
 
     all_colors = ["#FF7F00",  "#32FF00", "#19B2FF", "#654CFF",  "#E51932", "#FFFF32"]
 
@@ -46,11 +46,12 @@ def process_single(models, tmp_path, dir_name, reaction_label, selected_model_nu
 
     if selected_model_num is False:
         name = ""
-        sbml_diff.diff_models(models, sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label))
+        sbml_diff.diff_models(models, sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
+            show_stoichiometry=display_stoichiometry))
     else:
         name = str(selected_model_num) + "-"
-        sbml_diff.diff_models(models, sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label, selected_model=selected_model_num))
-
+        sbml_diff.diff_models(models, sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
+            selected_model=selected_model_num, show_stoichiometry=display_stoichiometry))
 
     graphviz = mystdout.getvalue()
     sys.stdout = old_stdout
@@ -70,7 +71,7 @@ def process_single(models, tmp_path, dir_name, reaction_label, selected_model_nu
     call(pr)
 
 
-def process(uploads, tmp_path, dir_name, reaction_label):
+def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry):
     models = []
 
     f1 = open(os.path.join(tmp_path, uploads[0]), 'r')
@@ -89,10 +90,10 @@ def process(uploads, tmp_path, dir_name, reaction_label):
 
 
     for i in range(0, len(uploads)):
-        process_single(models, tmp_path, dir_name, reaction_label, i + 1)
+        process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, i + 1)
 
     # all-in-one
-    process_single(models, tmp_path, dir_name, reaction_label)
+    process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry)
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -129,7 +130,11 @@ def upload_file():
             if "reaction_labels" in request.form and request.form["reaction_labels"] in ["none", "name", "rate", "name+rate"]:
                 reaction_label = request.form["reaction_labels"]
 
-            process(uploads, tmp_path, dir_name, reaction_label)
+            display_stoichiometry = False
+            if "stoichiometry" in request.form and request.form["stoichiometry"] == "yes":
+                display_stoichiometry = True
+
+            process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry)
 
             return redirect(url_for('results',
                                     filename=dir_name))
