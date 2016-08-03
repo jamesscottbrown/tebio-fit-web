@@ -11,11 +11,9 @@ from sbml_diff import *
 
 import tebio_fit_importer
 
-
 SERVER_DIR = '/var/www/tebio'
 # SERVER_DIR = '.'
 UPLOAD_FOLDER = SERVER_DIR + '/static/uploads'
-
 
 ALLOWED_EXTENSIONS = {'sbml', 'xml'}
 
@@ -37,9 +35,9 @@ def to_int(x):
         return 0
 
 
-def process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, elided_species, selected_model_num=False):
-
-    all_colors = ["#FF7F00",  "#32FF00", "#19B2FF", "#654CFF",  "#E51932", "#FFFF32"]
+def process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, elided_species,
+                   selected_model_num=False):
+    all_colors = ["#FF7F00", "#32FF00", "#19B2FF", "#654CFF", "#E51932", "#FFFF32"]
 
     old_stdout = sys.stdout
     sys.stdout = mystdout = StringIO()
@@ -47,20 +45,26 @@ def process_single(models, tmp_path, dir_name, reaction_label, display_stoichiom
     if selected_model_num is False:
         name = ""
         if elided_species:
-            sbml_diff.diff_abstract_models(models, sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
-                show_stoichiometry=display_stoichiometry), elided_species=elided_species)
+            sbml_diff.diff_abstract_models(models,
+                                           sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
+                                                                 show_stoichiometry=display_stoichiometry),
+                                           elided_species=elided_species)
         else:
             sbml_diff.diff_models(models, sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
-                show_stoichiometry=display_stoichiometry))
+                                                                show_stoichiometry=display_stoichiometry))
 
     else:
         name = str(selected_model_num) + "-"
         if elided_species:
-            sbml_diff.diff_abstract_models(models, sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
-                selected_model=selected_model_num, show_stoichiometry=display_stoichiometry), elided_species=elided_species)
+            sbml_diff.diff_abstract_models(models,
+                                           sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
+                                                                 selected_model=selected_model_num,
+                                                                 show_stoichiometry=display_stoichiometry),
+                                           elided_species=elided_species)
         else:
             sbml_diff.diff_models(models, sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
-                selected_model=selected_model_num, show_stoichiometry=display_stoichiometry))
+                                                                selected_model=selected_model_num,
+                                                                show_stoichiometry=display_stoichiometry))
 
     graphviz = mystdout.getvalue()
     sys.stdout = old_stdout
@@ -71,12 +75,14 @@ def process_single(models, tmp_path, dir_name, reaction_label, display_stoichiom
 
     # Get png
     from subprocess import call
-    pr = ["dot", "-Tpng", "-o", SERVER_DIR + "/static/uploads/" + dir_name + "/" + name + "results.png", SERVER_DIR + "/static/uploads/" + dir_name + "/" + name + "results.dot"]
+    pr = ["dot", "-Tpng", "-o", SERVER_DIR + "/static/uploads/" + dir_name + "/" + name + "results.png",
+          SERVER_DIR + "/static/uploads/" + dir_name + "/" + name + "results.dot"]
     call(pr)
 
     # Get pdf
     from subprocess import call
-    pr = ["dot", "-Tpdf", "-o", SERVER_DIR + "/static/uploads/" + dir_name + "/" + name + "results.pdf", SERVER_DIR +  "/static/uploads/" + dir_name + "/" + name + "results.dot"]
+    pr = ["dot", "-Tpdf", "-o", SERVER_DIR + "/static/uploads/" + dir_name + "/" + name + "results.pdf",
+          SERVER_DIR + "/static/uploads/" + dir_name + "/" + name + "results.dot"]
     call(pr)
 
 
@@ -96,7 +102,6 @@ def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, 
         f3 = open(os.path.join(tmp_path, uploads[2]), 'r')
         m3 = f3.read()
         models.append(m3)
-
 
     for i in range(0, len(uploads)):
         process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, elided_species, i + 1)
@@ -124,7 +129,8 @@ def upload_file():
 
             if f and allowed_file(f.filename):
                 filename = secure_filename(f.filename)
-                filename = str(len(uploads)+1) + "_" + filename  # prefix number to file to record order of files (which affects colors)
+                filename = str(len(
+                    uploads) + 1) + "_" + filename  # prefix number to file to record order of files (which affects colors)
 
                 f.save(os.path.join(tmp_path, filename))
                 uploads.append(filename)
@@ -136,7 +142,8 @@ def upload_file():
         else:
 
             reaction_label = "none"
-            if "reaction_labels" in request.form and request.form["reaction_labels"] in ["none", "name", "rate", "name+rate"]:
+            if "reaction_labels" in request.form and request.form["reaction_labels"] in ["none", "name", "rate",
+                                                                                         "name+rate"]:
                 reaction_label = request.form["reaction_labels"]
 
             display_stoichiometry = False
@@ -158,22 +165,18 @@ def upload_file():
 
 @app.route('/results/<filename>')
 def results(filename):
-
     # look up list of files
     files = os.listdir(os.path.join(UPLOAD_FOLDER, filename))
     files = filter(lambda f: ".xml" in f or ".sbml" in f, files)
 
-    return render_template('results.html', filename=filename, files=files, fileNumbers=range(1,len(files)+1))
-
+    return render_template('results.html', filename=filename, files=files, fileNumbers=range(1, len(files) + 1))
 
 
 # Routes for tebio-fit config converter
 
 @app.route('/tebiofit-form/', methods=['GET', 'POST'])
 def upload_tebiofit_file():
-
     basedir = UPLOAD_FOLDER + "/tebiofit"
-
 
     if request.method == 'POST':
 
@@ -198,7 +201,7 @@ def upload_tebiofit_file():
             uploads.append(filename)
 
         # Save model files
-        for i in range(1, len(request.files)+1):
+        for i in range(1, len(request.files) + 1):
             field = "file" + str(i)
 
             if field not in request.files:
@@ -218,7 +221,6 @@ def upload_tebiofit_file():
             return redirect(request.url)
 
         else:
-
 
             old_stdout = sys.stdout
             sys.stdout = mystdout = StringIO()
@@ -257,7 +259,6 @@ def page_sbml_diff():
 @app.route('/tebio-fit')
 def page_tebio_fit():
     return render_template('tebio-fit.html')
-
 
 
 if __name__ == "__main__":
