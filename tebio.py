@@ -35,7 +35,7 @@ def to_int(x):
         return 0
 
 
-def process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, elided_species,
+def process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species,
                    selected_model_num=False):
     all_colors = ["#FF7F00", "#32FF00", "#19B2FF", "#654CFF", "#E51932", "#FFFF32"]
 
@@ -44,7 +44,7 @@ def process_single(models, tmp_path, dir_name, reaction_label, display_stoichiom
 
     if selected_model_num is False:
         name = ""
-        if elided_species:
+        if abstract:
             sbml_diff.diff_abstract_models(models,
                                            sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
                                                                  show_stoichiometry=display_stoichiometry),
@@ -55,7 +55,7 @@ def process_single(models, tmp_path, dir_name, reaction_label, display_stoichiom
 
     else:
         name = str(selected_model_num) + "-"
-        if elided_species:
+        if abstract:
             sbml_diff.diff_abstract_models(models,
                                            sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
                                                                  selected_model=selected_model_num,
@@ -86,7 +86,7 @@ def process_single(models, tmp_path, dir_name, reaction_label, display_stoichiom
     call(pr)
 
 
-def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, elided_species):
+def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species):
     models = []
 
     f1 = open(os.path.join(tmp_path, uploads[0]), 'r')
@@ -104,10 +104,10 @@ def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, 
         models.append(m3)
 
     for i in range(0, len(uploads)):
-        process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, elided_species, i + 1)
+        process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species, i + 1)
 
     # all-in-one
-    process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, elided_species)
+    process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species)
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -151,11 +151,13 @@ def upload_file():
                 display_stoichiometry = True
 
             elided_species = []
+            abstract = False
             if "abstract" in request.form and request.form["abstract"] == "yes":
+                abstract = True
                 if "elided_species" in request.form and request.form["elided_species"]:
                     elided_species = request.form["elided_species"].split(',')
 
-            process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, elided_species)
+            process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species)
 
             return redirect(url_for('results',
                                     filename=dir_name))
