@@ -169,7 +169,11 @@ def upload_file():
 @app.route('/results/<filename>')
 def results(filename):
     # look up list of files
-    files = os.listdir(os.path.join(UPLOAD_FOLDER, filename))
+    path = os.path.join(UPLOAD_FOLDER, filename)
+    if not os.path.exists(path):
+        return redirect('/tebio/upload')
+
+    files = os.listdir(path)
     files = filter(lambda f: ".xml" in f or ".sbml" in f, files)
 
     return render_template('results.html', filename=filename, files=files, fileNumbers=range(1, len(files) + 1), colors=all_colors)
