@@ -22,6 +22,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'super secret key'
 app.config['SESSION_TYPE'] = 'filesystem'
 
+all_colors = ["#FF7F00", "#32FF00", "#19B2FF", "#654CFF", "#E51932", "#FFFF32"]
+
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -37,7 +39,6 @@ def to_int(x):
 
 def process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species,
                    selected_model_num=False):
-    all_colors = ["#FF7F00", "#32FF00", "#19B2FF", "#654CFF", "#E51932", "#FFFF32"]
 
     old_stdout = sys.stdout
     sys.stdout = mystdout = StringIO()
@@ -171,7 +172,7 @@ def results(filename):
     files = os.listdir(os.path.join(UPLOAD_FOLDER, filename))
     files = filter(lambda f: ".xml" in f or ".sbml" in f, files)
 
-    return render_template('results.html', filename=filename, files=files, fileNumbers=range(1, len(files) + 1))
+    return render_template('results.html', filename=filename, files=files, fileNumbers=range(1, len(files) + 1), colors=all_colors)
 
 
 # Routes for tebio-fit config converter
