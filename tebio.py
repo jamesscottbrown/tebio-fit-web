@@ -113,6 +113,9 @@ def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, 
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
+
+
+
     if request.method == 'POST':
 
         # Create a subdirectory in which to save results
@@ -158,12 +161,16 @@ def upload_file():
                 if "elided_species" in request.form and request.form["elided_species"]:
                     elided_species = request.form["elided_species"].split(',')
 
-            process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species)
+            try:
+                process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species)
 
-            return redirect(url_for('results',
-                                    filename=dir_name))
+                return redirect(url_for('results',
+                                        filename=dir_name))
+            except except RuntimeError, e:
+                return render_template('sbml-diff-error.html', err=e.args[0])
 
     return render_template('upload.html')
+
 
 
 @app.route('/results/<filename>')
