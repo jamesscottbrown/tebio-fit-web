@@ -166,7 +166,7 @@ def upload_file():
 
                 return redirect(url_for('results',
                                         filename=dir_name))
-            except except RuntimeError, e:
+            except RuntimeError, e:
                 return render_template('sbml-diff-error.html', err=e.args[0])
 
     return render_template('upload.html')
