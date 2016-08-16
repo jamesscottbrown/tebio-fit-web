@@ -22,6 +22,12 @@
                 href="../static/uploads/{{ filename }}/results.dot">this .dot file</a>. A <a
                 href="../static/uploads/{{ filename }}/results.pdf">PDF</a> is also available.</p>
 
+        <h3>kineticLaws</h3>
+        <iframe src="../static/uploads/{{ filename }}/rates.html"></iframe>
+
+        <h3>Parameters</h3>
+        <iframe src="../static/uploads/{{ filename }}/params.html"></iframe>
+
         {% if fileNumbers|length > 1 %}
             {% for i in fileNumbers %}
                 <h2>Elements in model {{ i }}</h2>
