@@ -205,9 +205,10 @@ def results(filename):
     files = os.listdir(path)
     files = filter(lambda f: ".xml" in f or ".sbml" in f, files)
 
+    colors = all_colors
     if len(files) == 1:
-        all_colors = ["black"]
-    return render_template('results.html', filename=filename, files=files, fileNumbers=range(1, len(files) + 1), colors=all_colors)
+        colors = ["black"]
+    return render_template('results.html', filename=filename, files=files, fileNumbers=range(1, len(files) + 1), colors=colors)
 
 
 # Routes for tebio-fit config converter
