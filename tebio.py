@@ -87,6 +87,25 @@ def process_single(models, tmp_path, dir_name, reaction_label, display_stoichiom
     call(pr)
 
 
+def get_tables(models, file_names, tmp_path):
+    old_stdout = sys.stdout
+
+    sys.stdout = mystdout = StringIO()
+    sbml_diff.print_rate_law_table(models, file_names, format="html")
+    f = open(os.path.join(tmp_path, 'rates.html'), 'w')
+    f.write(mystdout.getvalue())
+    f.close()
+
+    sbml_diff.compare_params(models, file_names, format="html")
+    sys.stdout = old_stdout
+    rate_table = mystdout.getvalue()
+    f = open(os.path.join(tmp_path, 'params.html'), 'w')
+    f.write(rate_table)
+    f.close()
+
+    sys.stdout = old_stdout
+
+
 def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species):
     models = []
 
@@ -110,11 +129,11 @@ def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, 
     # all-in-one
     process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species)
 
+    get_tables(models, uploads, tmp_path)
+
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
-
-
 
     if request.method == 'POST':
 
