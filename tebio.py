@@ -95,13 +95,16 @@ def get_tables(models, file_names, tmp_path):
     f = open(os.path.join(tmp_path, 'rates.html'), 'w')
     f.write(mystdout.getvalue())
     f.close()
+    mystdout.close()
 
+    sys.stdout = mystdout = StringIO()
     sbml_diff.compare_params(models, file_names, format="html")
     sys.stdout = old_stdout
     rate_table = mystdout.getvalue()
     f = open(os.path.join(tmp_path, 'params.html'), 'w')
     f.write(rate_table)
     f.close()
+    mystdout.close()
 
     sys.stdout = old_stdout
 
