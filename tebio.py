@@ -37,35 +37,43 @@ def to_int(x):
         return 0
 
 
-def process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species,
+def process_single(models, all_model_names, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species,
                    selected_model_num=False):
 
     old_stdout = sys.stdout
     sys.stdout = mystdout = StringIO()
 
+    rankdir = "TB"
+
     if selected_model_num is False:
         name = ""
         if abstract:
-            sbml_diff.diff_abstract_models(models,
-                                           sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
-                                                                 show_stoichiometry=display_stoichiometry),
-                                           elided_species=elided_species)
+            output_formatter = sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
+                                                     show_stoichiometry=display_stoichiometry,
+                                                     model_names=all_model_names)
+            sbml_diff.diff_abstract_models(models, all_model_names, output_formatter, elided_species=elided_species,
+                                           rankdir=rankdir)
         else:
-            sbml_diff.diff_models(models, sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
-                                                                show_stoichiometry=display_stoichiometry))
+            output_formatter = sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
+                                                     show_stoichiometry=display_stoichiometry,
+                                                     model_names=all_model_names)
+            sbml_diff.diff_models(models, all_model_names, output_formatter)
 
     else:
         name = str(selected_model_num) + "-"
         if abstract:
-            sbml_diff.diff_abstract_models(models,
-                                           sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
-                                                                 selected_model=selected_model_num,
-                                                                 show_stoichiometry=display_stoichiometry),
-                                           elided_species=elided_species)
+            output_formatter = sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
+                                                     selected_model=selected_model_num,
+                                                     show_stoichiometry=display_stoichiometry,
+                                                     model_names=all_model_names)
+            sbml_diff.diff_abstract_models(models, all_model_names, output_formatter, elided_species=elided_species,
+                                           rankdir=rankdir, model_names=all_model_names)
         else:
-            sbml_diff.diff_models(models, sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
-                                                                selected_model=selected_model_num,
-                                                                show_stoichiometry=display_stoichiometry))
+            output_formatter = sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
+                                                     selected_model=selected_model_num,
+                                                     show_stoichiometry=display_stoichiometry,
+                                                     model_names=all_model_names)
+            sbml_diff.diff_models(models, all_model_names, output_formatter)
 
     graphviz = mystdout.getvalue()
     sys.stdout = old_stdout
@@ -127,7 +135,7 @@ def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, 
         models.append(m3)
 
     for i in range(0, len(uploads)):
-        process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species, i + 1)
+        process_single(models, uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species, i + 1)
 
     # all-in-one
     process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species)
