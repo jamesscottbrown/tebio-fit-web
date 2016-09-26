@@ -43,7 +43,6 @@ def process_single(models, all_model_names, tmp_path, dir_name, reaction_label, 
     old_stdout = sys.stdout
     sys.stdout = mystdout = StringIO()
 
-    rankdir = "TB"
 
     if selected_model_num is False:
         name = ""
@@ -51,13 +50,16 @@ def process_single(models, all_model_names, tmp_path, dir_name, reaction_label, 
             output_formatter = sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
                                                      show_stoichiometry=display_stoichiometry,
                                                      model_names=all_model_names)
-            sbml_diff.diff_abstract_models(models, all_model_names, output_formatter, elided_species=elided_species,
-                                           rankdir=rankdir)
+
+            sd = sbml_diff.SBMLDiff(models, all_model_names, output_formatter)
+            sd.diff_abstract_models(elided_species=elided_species)
+
         else:
             output_formatter = sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
                                                      show_stoichiometry=display_stoichiometry,
                                                      model_names=all_model_names)
-            sbml_diff.diff_models(models, all_model_names, output_formatter)
+            sd = sbml_diff.SBMLDiff(models, all_model_names, output_formatter)
+            sd.diff_models()
 
     else:
         name = str(selected_model_num) + "-"
@@ -66,14 +68,16 @@ def process_single(models, all_model_names, tmp_path, dir_name, reaction_label, 
                                                      selected_model=selected_model_num,
                                                      show_stoichiometry=display_stoichiometry,
                                                      model_names=all_model_names)
-            sbml_diff.diff_abstract_models(models, all_model_names, output_formatter, elided_species=elided_species,
-                                           rankdir=rankdir)
+            sd = sbml_diff.SBMLDiff(models, all_model_names, output_formatter)
+            sd.diff_abstract_models(elided_species=elided_species)
+            
         else:
             output_formatter = sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
                                                      selected_model=selected_model_num,
                                                      show_stoichiometry=display_stoichiometry,
                                                      model_names=all_model_names)
-            sbml_diff.diff_models(models, all_model_names, output_formatter)
+            sd = sbml_diff.SBMLDiff(models, all_model_names, output_formatter)
+            sd.diff_models()
 
     graphviz = mystdout.getvalue()
     sys.stdout = old_stdout
