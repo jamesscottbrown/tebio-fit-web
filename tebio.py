@@ -107,14 +107,14 @@ def get_tables(models, file_names, tmp_path):
     output_formatter = sbml_diff.GenerateDot(all_colors, len(models))
     sd = sbml_diff.SBMLDiff(models, file_names, output_formatter)
 
-    sd.print_rate_law_table(models, file_names, format="html")
+    sd.print_rate_law_table(format="html")
     f = open(os.path.join(tmp_path, 'rates.html'), 'w')
     f.write(mystdout.getvalue())
     f.close()
     mystdout.close()
 
     sys.stdout = mystdout = StringIO()
-    sd.compare_params(models, file_names, format="html")
+    sd.compare_params(format="html")
     sys.stdout = old_stdout
     rate_table = mystdout.getvalue()
     f = open(os.path.join(tmp_path, 'params.html'), 'w')
