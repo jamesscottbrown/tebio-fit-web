@@ -70,7 +70,7 @@ def process_single(models, all_model_names, tmp_path, dir_name, reaction_label, 
                                                      model_names=all_model_names)
             sd = sbml_diff.SBMLDiff(models, all_model_names, output_formatter)
             sd.diff_abstract_models(elided_species=elided_species)
-            
+
         else:
             output_formatter = sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
                                                      selected_model=selected_model_num,
@@ -142,7 +142,7 @@ def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, 
         process_single(models, uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species, i + 1)
 
     # all-in-one
-    process_single(models, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species)
+    process_single(models, uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species)
 
     get_tables(models, uploads, tmp_path)
 
