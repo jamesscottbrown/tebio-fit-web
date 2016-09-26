@@ -67,7 +67,7 @@ def process_single(models, all_model_names, tmp_path, dir_name, reaction_label, 
                                                      show_stoichiometry=display_stoichiometry,
                                                      model_names=all_model_names)
             sbml_diff.diff_abstract_models(models, all_model_names, output_formatter, elided_species=elided_species,
-                                           rankdir=rankdir, model_names=all_model_names)
+                                           rankdir=rankdir)
         else:
             output_formatter = sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
                                                      selected_model=selected_model_num,
