@@ -5,6 +5,11 @@
         var numFields = 3;
 
         function addField(){
+
+            if (numFields > 9){
+                return true;
+            }
+
             var container = document.getElementById("fileList");
             var newNum = (numFields + 1).toString();
 

@@ -128,19 +128,10 @@ def get_tables(models, file_names, tmp_path):
 def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species, hide_rules):
     models = []
 
-    f1 = open(os.path.join(tmp_path, uploads[0]), 'r')
-    m1 = f1.read()
-    models.append(m1)
-
-    if len(uploads) > 1:
-        f2 = open(os.path.join(tmp_path, uploads[1]), 'r')
-        m2 = f2.read()
-        models.append(m2)
-
-    if len(uploads) > 2:
-        f3 = open(os.path.join(tmp_path, uploads[2]), 'r')
-        m3 = f3.read()
-        models.append(m3)
+    for i in range(len(uploads)):
+        f = open(os.path.join(tmp_path, uploads[i]), 'r')
+        m = f.read()
+        models.append(m)
 
     for i in range(0, len(uploads)):
         process_single(models, uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species, hide_rules, i + 1)
@@ -162,12 +153,13 @@ def upload_file():
         os.mkdir(tmp_path)
 
         uploads = []
-        for field in ['file1', 'file2', 'file3']:
+        for field_num in range(1,10):
 
-            if field not in request.files:
+            field_name = "file%s" % field_num
+            if field_name not in request.files:
                 continue
 
-            f = request.files[field]
+            f = request.files[field_name]
 
             if f and allowed_file(f.filename):
                 filename = secure_filename(f.filename)
