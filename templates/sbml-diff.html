@@ -13,22 +13,21 @@
         <li>through our <a href="/tebio/upload">web interface</a></li>
     </ul>
 
-    The code is <a href="https://github.com/jamesscottbrown/sbml-diff">on Github</a>.
+    The code is shared <a href="https://github.com/jamesscottbrown/sbml-diff">on Github</a>.
 
-    <h2>Visual Semantics of the Results</h2>
+    <h2>Resulting images</h2>
 
-    <p>Ellipses represent chemical species. Rectangles represent reactions. Parallelograms represent rules.</p>
+    <p>Many options are provided to adjust the resulting images, but there are 3 major types of representation.</p>
 
+    <p>Features are associated with models using color: if a feature is present in a single model it is assigned that
+    model's color, and if it is present in some (but not all) models it is drawn in black.  Features present in all models
+    it is drawn in grey, so that it visually fades into the background. </p>
 
-    <p>Directed edges with solid lines join each reactant species to the corresponding reactions, and each reaction to
-        the corresponding product species. Dashed lines join species to reactions whose rate they modify, but in which
-        they are not reactants; the corresponding kineticLaw for the reaction is analysed to determine whether this
-        influence is activatory or inhibitory, and the arrowhead shape is set accordingly. </p>
+    <h3>Default rendering</h3>
+    <p>In this view, each element of an SBML model (species, reactions, rules, events) are represented by a node in a
+    node-link network representation.</p>
 
-    <p>Rules of type
-       AssigmentRule or RateRule that set concentrations of particular species are represented as parallelograms, with
-        dotted lines indicating directed away from the species they depend on, and towards the species that they affect.
-    </p>
+    <img src="/tebio/static/img/semantics.png" height="50">
 
     <p>Reactions or rules that appear in more than one model, but with different kinetic laws, are displayed with a grey
         background. Colouring is used to indicate whether each node and edge is common to all models (grey), some but
@@ -37,10 +36,24 @@
     <p>The user can choose between labelling reaction nodes with the corresponding reaction name, kinetic law, or
     name and rate law, or leaving them unlabelled.</p>
 
+    <h3>Cartoon rendering</h3>
+    <p>This rendering differs from the default rendering in two main ways. Transcription reactions are represented by
+    SBOLv glyphs (rather than the generic rectangular reaction node). If a transcription reaction is followed by a
+        translation reaction, and the intermediate species is not involved in any other reactions (except degredation),
+    the transcription-translation is represented as a single reaction.
+    </p>
+
+    <h3>Abstract rendering</h3>
+
+    <img src="/tebio/static/img/semantics.png" height="50">
+
+    <p>In this rendering, all nodes represent species. Arrows indicate that one species increase the production,
+    decreases the production, increases the degredation, or decreases the degredation of another species.</p>
+
     <h2>Limitations</h2>
 
-    <p>Reactions and species are compared based on their ID; sbml-diff cannot recognise that two reactions in different
-        model files are the same unless they have the same name.</p>
+    <p>Reactions and species are compared based on their ID. Additionally, two elements are treated as being the same if
+        both have exactly the same (non-empty) set of MIRIAM identifiers.</p>
 
     <p>The arrowheads indicating activation/repression of a reaction by a ModifierSpecies may be misleading if the
     corresponding kineticLaw is not monotonic, or if the kineticLAw could represent either activation and repression,
