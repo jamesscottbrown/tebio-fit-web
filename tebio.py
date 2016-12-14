@@ -38,7 +38,7 @@ def to_int(x):
 
 
 def process_single(models, all_model_names, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species,
-                   selected_model_num=False):
+                   hide_rules, selected_model_num=False):
 
     old_stdout = sys.stdout
     sys.stdout = mystdout = StringIO()
@@ -51,14 +51,14 @@ def process_single(models, all_model_names, tmp_path, dir_name, reaction_label, 
                                                      show_stoichiometry=display_stoichiometry,
                                                      model_names=all_model_names)
 
-            sd = sbml_diff.SBMLDiff(models, all_model_names, output_formatter)
+            sd = sbml_diff.SBMLDiff(models, all_model_names, output_formatter, hide_rules=hide_rules)
             sd.diff_abstract_models(elided_species=elided_species)
 
         else:
             output_formatter = sbml_diff.GenerateDot(all_colors, len(models), reaction_label=reaction_label,
                                                      show_stoichiometry=display_stoichiometry,
                                                      model_names=all_model_names)
-            sd = sbml_diff.SBMLDiff(models, all_model_names, output_formatter)
+            sd = sbml_diff.SBMLDiff(models, all_model_names, output_formatter, hide_rules=hide_rules)
             sd.diff_models()
 
     else:
@@ -68,7 +68,7 @@ def process_single(models, all_model_names, tmp_path, dir_name, reaction_label, 
                                                      selected_model=selected_model_num,
                                                      show_stoichiometry=display_stoichiometry,
                                                      model_names=all_model_names)
-            sd = sbml_diff.SBMLDiff(models, all_model_names, output_formatter)
+            sd = sbml_diff.SBMLDiff(models, all_model_names, output_formatter, hide_rules=hide_rules)
             sd.diff_abstract_models(elided_species=elided_species)
 
         else:
@@ -76,7 +76,7 @@ def process_single(models, all_model_names, tmp_path, dir_name, reaction_label, 
                                                      selected_model=selected_model_num,
                                                      show_stoichiometry=display_stoichiometry,
                                                      model_names=all_model_names)
-            sd = sbml_diff.SBMLDiff(models, all_model_names, output_formatter)
+            sd = sbml_diff.SBMLDiff(models, all_model_names, output_formatter, hide_rules=hide_rules)
             sd.diff_models()
 
     graphviz = mystdout.getvalue()
@@ -125,7 +125,7 @@ def get_tables(models, file_names, tmp_path):
     sys.stdout = old_stdout
 
 
-def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species):
+def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species, hide_rules):
     models = []
 
     f1 = open(os.path.join(tmp_path, uploads[0]), 'r')
@@ -143,10 +143,10 @@ def process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, 
         models.append(m3)
 
     for i in range(0, len(uploads)):
-        process_single(models, uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species, i + 1)
+        process_single(models, uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species, hide_rules, i + 1)
 
     # all-in-one
-    process_single(models, uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species)
+    process_single(models, uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species, hide_rules)
 
     get_tables(models, uploads, tmp_path)
 
@@ -192,6 +192,10 @@ def upload_file():
             if "stoichiometry" in request.form and request.form["stoichiometry"] == "yes":
                 display_stoichiometry = True
 
+            hide_rules = False
+            if "hide_rules" in request.form and request.form["hide_rules"] == "yes":
+                hide_rules = True
+
             elided_species = []
             abstract = False
             if "abstract" in request.form and request.form["abstract"] == "yes":
@@ -200,7 +204,7 @@ def upload_file():
                     elided_species = request.form["elided_species"].split(',')
 
             try:
-                process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species)
+                process(uploads, tmp_path, dir_name, reaction_label, display_stoichiometry, abstract, elided_species, hide_rules)
 
                 return redirect(url_for('results',
                                         filename=dir_name))
