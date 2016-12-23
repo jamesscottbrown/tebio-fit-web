@@ -43,7 +43,6 @@ def process_single(models, all_model_names, tmp_path, dir_name, reaction_label, 
     old_stdout = sys.stdout
     sys.stdout = mystdout = StringIO()
 
-
     if selected_model_num is False:
         name = ""
         if abstract:
@@ -107,14 +106,14 @@ def get_tables(models, file_names, tmp_path):
     output_formatter = sbml_diff.GenerateDot(all_colors, len(models))
     sd = sbml_diff.SBMLDiff(models, file_names, output_formatter)
 
-    sd.print_rate_law_table(format="html")
+    sd.print_rate_law_table(output_format="html")
     f = open(os.path.join(tmp_path, 'rates.html'), 'w')
     f.write(mystdout.getvalue())
     f.close()
     mystdout.close()
 
     sys.stdout = mystdout = StringIO()
-    sd.compare_params(format="html")
+    sd.compare_params(output_format="html")
     sys.stdout = old_stdout
     rate_table = mystdout.getvalue()
     f = open(os.path.join(tmp_path, 'params.html'), 'w')
