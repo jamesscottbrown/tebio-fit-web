@@ -1,0 +1,219 @@
+{
+  "models": [
+    {
+      "params": [
+        {
+          "name": "parameter1",
+          "min": "1.0",
+          "column": 0,
+          "max": "1.0",
+          "type": "constant",
+          "string": "Constant(1.0)"
+        },
+        {
+          "name": "parameter2",
+          "min": "0",
+          "column": 1,
+          "max": "50",
+          "type": "uniform",
+          "string": "U(0, 50)"
+        },
+        {
+          "name": "parameter3",
+          "min": "0",
+          "column": 2,
+          "max": "10",
+          "type": "uniform",
+          "string": "U(0, 10)"
+        },
+        {
+          "name": "parameter4",
+          "min": "0",
+          "column": 3,
+          "max": "50",
+          "type": "uniform",
+          "string": "U(0, 50)"
+        },
+        {
+          "name": "parameter5",
+          "min": "0",
+          "column": 4,
+          "max": "10",
+          "type": "uniform",
+          "string": "U(0, 10)"
+        },
+        {
+          "name": "parameter6",
+          "min": "1.0",
+          "column": 5,
+          "max": "1.0",
+          "type": "constant",
+          "string": "Constant(1.0)"
+        }
+      ],
+      "sbml_name": "mRNAselfReg1.sbml",
+      "initial_conditions": [
+        {
+          "name": "ic1",
+          "value": "10.0"
+        },
+        {
+          "name": "ic2",
+          "value": "5.0"
+        },
+        {
+          "name": "ic3",
+          "value": "0.0"
+        }
+      ],
+      "model_name": "mRNAselfReg1",
+      "fit": [
+        "species1",
+        "species2+species3"
+      ]
+    },
+    {
+      "params": [
+        {
+          "name": "parameter1",
+          "min": "1.0",
+          "column": 0,
+          "max": "1.0",
+          "type": "constant",
+          "string": "Constant(1.0)"
+        },
+        {
+          "name": "parameter2",
+          "min": "0",
+          "column": 1,
+          "max": "10",
+          "type": "uniform",
+          "string": "U(0, 10)"
+        },
+        {
+          "name": "parameter3",
+          "min": "0",
+          "column": 2,
+          "max": "10",
+          "type": "uniform",
+          "string": "U(0, 10)"
+        },
+        {
+          "name": "parameter4",
+          "min": "0",
+          "column": 3,
+          "max": "30",
+          "type": "uniform",
+          "string": "U(0, 30)"
+        },
+        {
+          "name": "parameter5",
+          "min": "0",
+          "column": 4,
+          "max": "30",
+          "type": "uniform",
+          "string": "U(0, 30)"
+        }
+      ],
+      "sbml_name": "mRNAselfReg2.sbml",
+      "initial_conditions": [
+        {
+          "name": "ic1",
+          "value": "10.0"
+        },
+        {
+          "name": "ic2",
+          "value": "5.0"
+        }
+      ],
+      "model_name": "mRNAselfReg2",
+      "fit": [
+        "species1",
+        "species2"
+      ]
+    }
+  ],
+  "epsilon_schedule": [
+    "380",
+    "370",
+    "360",
+    "340",
+    "300"
+  ],
+  "particles": "100",
+  "measurements": [
+    [
+      "8.861",
+      "12.241",
+      "26.408",
+      "21.474",
+      "13.776",
+      "10.038",
+      "8.127",
+      "7.264",
+      "6.716",
+      "6.725",
+      "7.244",
+      "7.830",
+      "8.772",
+      "9.076",
+      "8.941",
+      "8.539",
+      "8.246",
+      "8.543",
+      "8.780",
+      "8.666",
+      "8.736",
+      "8.505"
+    ],
+    [
+      "NA",
+      "NA",
+      "NA",
+      "144.147",
+      "NA",
+      "140.720",
+      "NA",
+      "103.582",
+      "NA",
+      "82.268",
+      "NA",
+      "77.614",
+      "82.699",
+      "88.346",
+      "90.024",
+      "89.033",
+      "87.776",
+      "87.291",
+      "87.431",
+      "87.706",
+      "87.839",
+      "87.826"
+    ]
+  ],
+  "times": [
+    "0",
+    "0.1",
+    "0.2",
+    "0.5",
+    "1",
+    "1.5",
+    "2",
+    "2.5",
+    "3",
+    "3.5",
+    "4",
+    "4.5",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15"
+  ]
+}

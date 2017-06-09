@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>TEBIO-Fit - Model Comparison</title>
+
+    <link rel="stylesheet" href="bootstrap/3.3.6/css/bootstrap.css">
+    <link rel="stylesheet" href="starter-template.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="site.css">
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="splom.js"></script>
+    <script src="stackedbar.js"></script>
+    <script src="distancePlot.js"></script>
+    <script src="summaryTable.js"></script>
+    <script src="rateTable.js"></script>
+
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      MathML: {
+        extensions: ["content-mathml.js"]
+      },
+      SVG: {
+        scale: 120
+      }
+
+    });
+    </script>
+    <script type="text/javascript" async
+            src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=MML_SVG">
+    </script>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="">TEBio-Fit</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="about.html">About</a></li>
+                <li><a href="mailto:james@jamesscottbrown.com">Contact</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="starter-template">
+        <h1>Model Comparison</h1>
+
+        <p class="lead">This page compares several candidate models.</p>
+
+        <div class="row">
+        <div id="models" class="col-md-4 col-md-offset-4"></div>
+        </div>
+
+        <div class="row">
+        <div id="modelKinetics" class="col-md-4 col-md-offset-4"></div>
+        </div>
+
+        <div class="row">
+        <div id="summaryTable" class="col-md-4 col-md-offset-4"></div>
+        </div>
+
+        <div id="modelLikelihood"></div>
+
+        <dl class="dl-horizontal">
+            <dt>Explanation</dt>
+            <dd>Each row represents a different generation, with a different value of epsilon.
+                The width of the constituitive bars indicates the probability of each model, estimated using the samples
+                from that generation.</dd>
+
+            <dt>Interactivity</dt>
+            <dd>Hovering over a point displays the name of the corresponding model and its probability. Clicking on a bar
+                navigates to the a view of the samples obtained for the corresponding model and generation. </dd>
+        </dl>
+
+
+        <div id="errors"></div>
+
+        <dl class="dl-horizontal">
+            <dt>Explanation</dt>
+            <dd>Each horizontal dashed line represents the value of the threshold $\epsilon$ for a
+                generation. Each point represents the value of $d(x, x_0)$ for a single particle. Lines join the points
+                representing particles from the same model and generation.</dd>
+
+            <dt>Interactivity</dt>
+            <dd>mousing over a point highlights all points from the same generation. Hovering over a
+                point displays the distance for that point</dd>
+
+            <dt>Interpretation</dt>
+            <dd>For each generation, two things are apparent from the graph: how many particles correspond to each model
+                (indicated by how far curves extend to the right), and how well the particles from each model match the
+                experimental measurements (indicated by how far curves extend downwards).</dd>
+        </dl>
+
+
+    </div>
+
+</div><!-- /.container -->
+
+
+<script>
+
+
+    var experiment;
+    var model;
+    var modelName;
+    var path;
+    var global_data;
+
+    // Function from http://stackoverflow.com/a/979996
+    function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
+                function (m, key, value) {
+                    vars[key] = value;
+                });
+        return vars;
+    }
+
+    function getModelDetails(callback) {
+
+        experiment = getUrlVars()["experiment"];
+        path = "data/" + experiment + "/";
+
+        if (!experiment){
+            var url = window.location.href;
+            window.location = url.replace('comparison.html', 'about.html');
+        }
+
+        d3.json(path + "setup.json", function (d) {
+            global_data = d;
+            //model = global_data.models.filter( function(x){ return x.model_name == modelName }  )[0];
+            callback();
+        });
+    }
+    ;
+
+
+    function setup_page() {
+        width = $("body").width() - 200;
+        getModelDetails(fill_placeholders);
+    }
+
+    function fill_placeholders() {
+        summariseModelTable();
+        summaryTable();
+        plotErrors(width);
+        fillRateTable();
+    }
+    ;
+
+    window.onLoad = setup_page();
+
+</script>
+
+<style>
+
+    .axis-title{
+        font-size: 15pt;
+    }
+
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .x.axis path {
+        display: none;
+    }
+
+    .epsilon-points.unselected {
+        opacity: 0.25;
+    }
+
+    .distanceplot-axis path {
+        fill: none;
+        stroke: black;
+        stroke-width: 2px;
+    }
+
+
+</style>
+
+</body>
+</html>

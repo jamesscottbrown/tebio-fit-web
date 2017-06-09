@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<sbml xmlns="http://www.sbml.org/sbml/level2/version4" level="2" version="4">
+  <model>
+    <listOfCompartments>
+      <compartment id="cell" name="cell" size="1"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="species_m" initialAmount="10" compartment="cell"></species>
+      <species id="species_p1" initialAmount="5" compartment="cell"></species>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter id="parameter_0" value="10.0"/>
+      <parameter id="parameter_2" value="10.0"/>
+      <parameter id="parameter_3" value="2.0"/>
+      <parameter id="parameter_4" value="1.0"/>
+    </listOfParameters>
+    <listOfReactions>
+      <reaction id="reaction_0">
+        <listOfReactants>
+            <speciesReference species="species_m"></speciesReference>
+        </listOfReactants>
+        <listOfProducts>
+            <speciesReference species="species_p1"></speciesReference>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+            <apply>
+              <times/>
+              <ci> parameter_0 </ci>
+              <ci> species_m </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_2">
+        <listOfProducts>
+          <speciesReference species="species_m"></speciesReference>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+            <apply>
+              <times/>
+              <ci> parameter_2 </ci>
+              <ci> species_p1 </ci>
+            </apply>
+          </math>
+         </kineticLaw>
+        </reaction>
+      <reaction id="reaction_4">
+        <listOfReactants>
+          <speciesReference species="species_p1"></speciesReference>
+        </listOfReactants>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+            <apply>
+              <times/>
+              <ci> parameter_4 </ci>
+              <ci> species_p1 </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="reaction_5">
+        <listOfReactants>
+          <speciesReference species="species_m"></speciesReference>
+        </listOfReactants>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+            <apply>
+              <times/>
+              <ci> parameter_3 </ci>
+              <ci> species_m </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>

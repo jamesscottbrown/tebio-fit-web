@@ -1,0 +1,153 @@
+<input>
+
+######################## number of models
+
+# Number of models for which details are described in this input file
+<modelnumber> 2 </modelnumber>
+
+######################## restart
+
+# Restart from previous (pickled) population?
+<restart> False </restart>
+
+######################## epsilon schedule
+
+# Automatic epsilon schedule. Provide a vector of final epsilons and the alpha (defaults to 0.9)
+<epsilon>
+<e1> 380 370 360 340 300 </e1>
+</epsilon>
+
+# OR
+# Series of epsilons. (Whitespace delimited list)
+# Multiple epsilon schedules can be specified by giving additional vectors enclosed in <e2> </e2>, <e3> </e3> etc
+# NOTE: the parser always reads them in order and ignores the tag value
+<!-- <epsilon> -->
+<!-- <e1> 5.0 3.0 2.0 1.0 </e1> -->
+<!--</epsilon> -->
+
+######################## particles
+
+<particles> 100 </particles>
+
+######################## beta
+
+# Beta is the number of times to simulate each sampled parameter set.
+# This is only applicable for models simulated using Gillespie and SDE
+<beta> 1 </beta>
+
+######################## dt
+
+# Internal timestep for solver.
+# Make this small for a stiff model.
+<dt> 0.01 </dt>
+
+######################## perturbation kernels : OPTIONAL (default uniform)
+
+# The pertubation kernels are computed with respect to the previous parameter distribution
+# Currently uniform and normal are implemented
+<kernel> uniform </kernel>
+
+######################## model kernel : OPTIONAL (default 0.7)
+
+# Probability of perturbing the sampled model (ignored when modelnumber = 1)
+<modelkernel> 0.7 </modelkernel>
+
+######################## ODE solver control : OPTIONAL 
+
+# rtol and atol can be specified here. If the model is stiff then setting these to small might help the simulation to run
+#<rtol> </rtol> 
+#<atol> </atol>
+
+######################## User-supplied data
+<data>
+# times: For ABC SMC, times must be a whitespace delimited list
+# In simulation mode these are the timepoints for which the simulations will be output
+<times> 0 0.1 0.2 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5 6 7 8 9 10 11 12 13 14 15 </times>
+
+# variables: For ABC SMC, whitespace delimited lists of concentrations (ODE or SDE) or molecule numbers (Gillespie)
+# Denote your data via tags <v1> </v1> or <var1> </var1> or <v2> </v2> etc. The tags are ignored and the data read in order
+# For simulation these data are ignored
+# See fitting instruction below if the dimensionality of your data sets differ from the dimensionality of your model
+<variables>
+ <var1> 10.000  8.861 12.241 26.408 21.474 13.776 10.038  8.127  7.264  6.716  6.725 7.244  7.830  8.772  9.076  8.941  8.539  8.246  8.543  8.780  8.666  8.736 8.505 </var1>
+<var2> NA NA NA NA 144.147 NA 140.720 NA 103.582 NA 82.268 NA 77.614 82.699 88.346 90.024 89.033 87.776 87.291 87.431 87.706 87.839 87.826 </var2>
+</variables>
+</data>
+
+######################## Models
+
+<models>
+<model1>
+<name> mRNAselfReg1 </name>
+<source> mRNAselfReg1.sbml </source>
+
+# type: the method used to simulate your model. ODE, SDE or Gillespie.
+<type> SDE </type>
+
+# Fitting information. If fit is None, all species in the model are fitted to the data in the order they are listed in the model.
+# Otherwise, give a whitespace delimited list of fitting instrictions the same length as the dimensions of your data.
+# Use speciesN to denote the Nth species in your model. Simple arithmetic operations can be performed on the species from your model.
+# For example, to fit the sum of the first two species in your model to your first variable, write fit: species1+species2
+<fit> species1 species2+species3 </fit>
+
+# Priors on initial conditions and parameters:
+# one of 
+#       constant, value 
+#       normal, mean, variance 
+#       uniform, lower, upper 
+#       lognormal, mean, variance 
+
+<initial>
+ <ic1> constant 10.0 </ic1>
+ <ic2> constant 5.0 </ic2>
+ <ic3> constant 0.0 </ic3>
+</initial>
+
+<parameters>
+<parameter1> constant 1.0 </parameter1>
+<parameter2> uniform 0 50 </parameter2>
+<parameter3> uniform 0 10 </parameter3>
+<parameter4> uniform 0 50 </parameter4>
+<parameter5> uniform 0 10 </parameter5>
+<parameter6> constant 1.0 </parameter6>
+</parameters>
+</model1>
+
+<model2>
+<name> mRNAselfReg2 </name>
+<source> mRNAselfReg2.sbml </source>
+
+# type: the method used to simulate your model. ODE, SDE or Gillespie.
+<type> SDE </type>
+
+# Fitting information. If fit is None, all species in the model are fitted to the data in the order they are listed in the model.
+# Otherwise, give a whitespace delimited list of fitting instrictions the same length as the dimensions of your data.
+# Use speciesN to denote the Nth species in your model. Simple arithmetic operations can be performed on the species from your model.
+# For example, to fit the sum of the first two species in your model to your first variable, write fit: species1+species2
+<fit> species1 species2 </fit>
+
+# Priors on initial conditions and parameters:
+# one of 
+#       constant, value 
+#       normal, mean, variance 
+#       uniform, lower, upper 
+#       lognormal, mean, variance 
+
+<initial>
+ <ic1> constant 10.0 </ic1>
+ <ic2> constant 5.0 </ic2>
+</initial>
+
+<parameters>
+<parameter1> constant 1.0 </parameter1>
+<parameter2> uniform 0 10 </parameter2>
+<parameter3> uniform 0 10 </parameter3>
+<parameter4> uniform 0 30 </parameter4>
+<parameter5> uniform 0 30 </parameter5>
+</parameters>
+</model2>
+
+</models>
+
+</input>
+

@@ -1,0 +1,132 @@
+{
+  "epsilon_schedule": [
+    380,
+    370,
+    360,
+    340,
+    300
+  ],
+  "times": [0.1, 0.2, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+  "measurements":[
+    [8.861,12.241,26.408,21.474,13.776,10.038,8.127,7.264,6.716,6.725,7.244,7.830,8.772,9.076,8.941,8.539,8.246,8.543,8.780,8.666,8.736,8.50],
+    ["NA","NA","NA",144.147,"NA",140.720,"NA",103.582,"NA",82.268,"NA",77.614,82.699,88.346,90.024,89.033,87.776,87.291,87.431,87.706,87.839,87.826]
+  ],
+  "models": [
+    {
+      "model_name": "mRNAselfReg1",
+      "sbml_name": "mRNAselfReg1.sbml",
+      "model_image": "model_1.gif",
+      "fit": [
+        "species1",
+        "species2+species3"
+      ],
+      "initial_conditions": [
+        {
+          "name": "ic1",
+          "value": 10
+        },
+        {
+          "name": "ic2",
+          "value": 5
+        },
+        {
+          "name": "ic3",
+          "value": 0
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "type": "constant",
+          "min": 1,
+          "max": 1,
+          "column": 0
+        },
+        {
+          "name": "p2",
+          "type": "uniform",
+          "min": 0,
+          "max": 50,
+          "column": 1
+        },
+        {
+          "name": "p3",
+          "type": "uniform",
+          "min": 0,
+          "max": 10,
+          "column": 2
+        },
+        {
+          "name": "p4",
+          "type": "uniform",
+          "min": 0,
+          "max": 50,
+          "column": 3
+        },
+        {
+          "name": "p5",
+          "type": "uniform",
+          "min": 0,
+          "max": 30,
+          "column": 4
+        }
+      ]
+    },
+    {
+      "model_name": "mRNAselfReg2",
+      "sbml_name": "mRNAselfReg2.sbml",
+      "model_image": "model_2.gif",
+      "fit": [
+        "species1",
+        "species2"
+      ],
+      "initial_conditions": [
+        {
+          "name": "ic1",
+          "value": 10
+        },
+        {
+          "name": "ic2",
+          "value": 5
+        }
+      ],
+      "params": [
+        {
+          "name": "p1",
+          "type": "constant",
+          "min": 1,
+          "max": 1,
+          "column": 0
+        },
+        {
+          "name": "p2",
+          "type": "uniform",
+          "min": 0,
+          "max": 10,
+          "column": 1
+        },
+        {
+          "name": "p3",
+          "type": "uniform",
+          "min": 0,
+          "max": 10,
+          "column": 2
+        },
+        {
+          "name": "p4",
+          "type": "uniform",
+          "min": 0,
+          "max": 30,
+          "column": 3
+        },
+        {
+          "name": "p5",
+          "type": "uniform",
+          "min": 0,
+          "max": 30,
+          "column": 4
+        }
+      ]
+    }
+  ]
+}

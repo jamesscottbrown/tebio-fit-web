@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>TEBIO-Fit - Single Model View</title>
+
+    <link rel="stylesheet" href="bootstrap/3.3.6/css/bootstrap.css">
+    <link rel="stylesheet" href="starter-template.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="site.css">
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="splom.js"></script>
+    <script src="timeseries.js"></script>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="">TEBio-Fit</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="about.html">About</a></li>
+                <li><a href="mailto:james@jamesscottbrown.com">Contact</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="starter-template">
+        <h1>Single Model Parameter Estimation</h1>
+
+        <p class="lead"> For a comparison of the alternative models,
+            see the <a onclick="redirectToOverview();">overview page</a>.</p>
+
+        <div class="row">
+        <h2> Model </h2>
+        <img id=networkPlaceholder src=""/>
+
+        <p>The model can be downloaded in SBML format: <a href id="sbml_link"></a></p>
+        </div>
+
+        <div class="row">
+        <h2> Prior Distribution </h2>
+
+        <div id="paramTable" class="col-md-4 col-md-offset-4"></div>
+        </div>
+
+        <div class="row"></div>
+        <h2> Posterior Distribution </h2>
+        <div id="epsilons">Epsilon values:</div>
+
+        <button onclick="toggleHistograms();" id="histogramButton" class = "btn btn-default">Histograms on diagonal</button>
+        </div>
+
+        <div id="splom" style="float: none; margin: 0 auto;"></div>
+
+        <dl class="dl-horizontal">
+            <dt>Explanation</dt>
+            <dd>This is a matrix of scatterplots of samples from the posterior distribution. Each point
+                corresponds to a choice of parameters that, when simulated, gave a time-series that was "close" to the
+                provided experimental data.</dd>
+
+            <dt>Interactivity</dt>
+            <dd>Clicking the button changes the generation for which samples are plotted, and updates
+                the plot of trajectories below. Holding down the mouse allows selection of the points in a rectangular region
+                of any scatterplot; the selected points are highlighted in all scatterplots, and other tajectories are hidden in
+                the trajectory plot. </dd>
+
+            <dt>Interpretation</dt>
+            <dd>If uniform priors are applied, the scatterplot axes are scaled to the range of the
+                prior. The proportion of the area covered by the samples thus gives an indication of the <i>factor by which
+                    uncertainty in the parameters has been reduced</i> by the experimental observations. Changing between
+                different values of epsilon reveals how this affects the estimated posterior distribution. The pattern in
+                which points are arranged reveals any correlations between the parameters, which are inidicative of problems
+                with identifiability.</dd>
+        </dl>
+
+
+        <h2>Simulation Trajectories</h2>
+        <div id="timeseries" style="float: none; margin: 0 auto;"></div>
+
+
+        <dl class="dl-horizontal">
+            <dt>Explanation</dt>
+            <dd>This graph shows time-courses for simulations using the parameters indicate in the
+                scatterplots above. Black crosses indicate the values of the experimental measurements.</dd>
+
+            <dt>Interactivity</dt>
+            <dd>Highlighting points in the scatterplot filters this plot, by hiding trajectories
+                corresponding to points that are not selected. Hovering over a point reveals its value. </dd>
+        </dl>
+
+    </div>
+
+</div><!-- /.container -->
+
+
+<script>
+    var experiment;
+    var model;
+    var modelName;
+    var path;
+    var global_data;
+    var drawHistograms = false;
+
+    function redirectToOverview() {
+        return window.location.href = window.location.href.split("?")[0].replace("index.html", "comparison.html") + "?experiment=" + getUrlVars()["experiment"];
+    }
+
+    // Function from http://stackoverflow.com/a/979996
+    function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,
+                function (m, key, value) {
+                    vars[key] = value;
+                });
+        return vars;
+    }
+
+    function getModelDetails(callback) {
+
+        experiment = getUrlVars()["experiment"];
+        modelName = getUrlVars()["model"];
+        path = "data/" + experiment + "/";
+
+
+        if (!experiment){
+            var url = window.location.href;
+            window.location = url.replace('index.html', 'about.html');
+        } else if (!modelName){
+            var url = window.location.href;
+            window.location = url.replace('index.html', 'comparison.html');
+        }
+
+
+        d3.json(path + "setup.json", function (d) {
+            global_data = d;
+            model = global_data.models.filter(function (x) {
+                return x.model_name == modelName
+            })[0];
+            callback();
+        })
+
+    }
+    ;
+
+
+    function setup_page() {
+        getModelDetails(fill_placeholders);
+    }
+
+    function fill_placeholders() {
+
+        sbml_name = model.model_name;
+        document.getElementById('networkPlaceholder').src = path + modelName + ".png";
+        document.getElementById('sbml_link').href = path + model.sbml_name;
+        document.getElementById('sbml_link').innerHTML = model.sbml_name;
+
+        listEpsilons();
+        paramTable();
+
+        plotSPLOM(form_url_for_population(1), 0);
+        d3.select("#epsilons").selectAll("button").filter(function (d) {
+            return d == global_data.epsilon_schedule[0]
+        }).classed("active", true)
+
+        plotTimeSeries(1);
+
+        var epsilon = getUrlVars()["epsilon"];
+        if (epsilon) {
+            var ind = global_data.epsilon_schedule.indexOf(epsilon);
+            var button = d3.select("#epsilons").selectAll('button').filter(function (x) {
+                return x == epsilon;
+            });
+
+            selectEpsilonFromSelection(button, ind);
+            plotTimeSeries(ind + 1);
+        }
+
+    }
+
+    window.onLoad = setup_page();
+
+
+
+</script>
+
+<style>
+    .timeseries-line {
+        fill: none;
+    }
+
+    .timeseries-axis path {
+        fill: none;
+        stroke: black;
+        stroke-width: 2px;
+    }
+
+    .trajectory-not-selected {
+        visibility: hidden;
+    }
+
+    .bar rect {
+        shape-rendering: crispEdges;
+    }
+
+</style>
+
+</body>
+</html>
