@@ -10,7 +10,7 @@ import tebio_fit_importer
 
 SERVER_DIR = '/code'
 # SERVER_DIR = '.'
-UPLOAD_FOLDER = SERVER_DIR + '/static/uploads'
+UPLOAD_FOLDER = SERVER_DIR + '/static/uploads-tebiofit'
 
 ALLOWED_EXTENSIONS = {'sbml', 'xml'}
 
@@ -38,7 +38,7 @@ def to_int(x):
 
 @app.route('/tebiofit-form/', methods=['GET', 'POST'])
 def upload_tebiofit_file():
-    basedir = UPLOAD_FOLDER + "/tebiofit"
+    basedir = UPLOAD_FOLDER
 
     if request.method == 'POST':
 
